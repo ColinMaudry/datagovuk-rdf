@@ -33,6 +33,7 @@
 	
 	<target name="download">
   	<echo>[DOWNLOAD AND EXTRACT]</echo>
+		<mkdir dir="csv"/>
 		<echo>Downloading ZIP...</echo>
   	<get
   		verbose="false"
@@ -83,6 +84,7 @@
 	
 	<target name="convert" depends="clean">
 		<echo>[CONVERT]</echo>
+		<mkdir dir="rdf/"/>
 		<echo>Querying datasets.csv with a SPARQL CONSTRUCT using TARQL (thanks @cygri)...</echo>
 		<exec executable="${tarql}" searchpath="true" output="rdf/datasets.ttl">
 			<arg line="sparql/construct-datasets.rq"/>
