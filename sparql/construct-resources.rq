@@ -29,7 +29,7 @@ from <file:../csv/resources.csv#delimiter=%2C;encoding=utf-8>
   
   bind(uri(concat("https://www.data.maudry.com/uk/resources/",?Resource_ID)) as ?resource)
   bind(uri(concat("https://www.data.maudry.com/uk/datasets/",?Dataset_Name)) as ?dataset)
-  bind(if(contains(?URL," "), uri(encode_for_uri(?url)),uri(?url)) as ?urlAsUri)
+  bind(if(contains(?URL," "), uri(encode_for_uri(?URL)),uri(?URL)) as ?urlAsUri)
  # bind(xs:dateTime(?Date) as ?createdAsDateTime)
   bind(lcase(?Format) as ?lcFormat)
   }
