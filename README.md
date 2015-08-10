@@ -1,7 +1,9 @@
-Semantic data.gov.uk (0.8.1)
+Semantic data.gov.uk (0.8.2)
 ==============
 
 This project is a fork of [datagouvfr-rdf](https://github.com/ColinMaudry/datagouvfr-rdf), adapted to the British Open Data portal metadata ([data.gov.uk](http://data.gov.uk)).
+
+You can fire [SPARQL](http://www.w3.org/TR/sparql11-query/#introduction) queries on the endpoint [here](http://www.data.maudry.com/sparql/data.gov.uk/).
 
 ## Update script
 
@@ -15,7 +17,7 @@ This project is a fork of [datagouvfr-rdf](https://github.com/ColinMaudry/datago
 3. Integrating the output of [beheader](https://github.com/ColinMaudry/beheader) into the graph (soon)
 1. Adding some metadata about the resulting data set ([DCAT](http://www.w3.org/TR/vocab-dcat/#vocabulary-overview), [VoID](http://www.w3.org/TR/void/), [PROV](http://www.w3.org/TR/2013/REC-prov-o-20130430/#introduction))
 
-**This script is run every day to update the RDF metadata**.
+**This script is run every night to update the RDF metadata**.
 
 The data model can be seen [here](https://www.lucidchart.com/documents/view/c695f3b9-47c3-4278-9ee6-37e9d649c110).
 
@@ -33,7 +35,7 @@ The data model can be seen [here](https://www.lucidchart.com/documents/view/c695
 
 ### Run it
 
-- If Requirements are fulfilled, just run `ant` in `datagouvfr-rdf` root folder.
+- If Requirements are fulfilled, just run `ant` in `datagovuk-rdf` root folder.
 - If you have already run the process and just want to reload the data in the triple store, run `ant quick`.
 
 ### Next steps
@@ -52,6 +54,10 @@ Otherwise, you can reach me:
 - on Twitter: [@CMaudry](https://twitter.com/CMaudry)
 
 ## Change log
+
+##### 0.8.2
+
+* Fixed dcat:downloadUrl
 
 ##### 0.8.1
 
