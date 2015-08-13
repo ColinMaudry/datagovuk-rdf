@@ -129,14 +129,14 @@
 		</replace>
 		<echo>No post-processing for now.</echo>
 
-		<!--<echo>Gathering collected data about resources...</echo>
+		<echo>Gathering collected data about resources...</echo>
 		<exec executable="${curl}" searchpath="true" failonerror="true" >
 			<arg line="-s -X POST"/>
-			<arg line="-\-data-binary @'sparql/temp/postprocessing-resources-data.ru'"/>
+			<arg line="--data-binary @'sparql/temp/postprocessing-resources-data.ru'"/>
 			<arg line="-H 'Content-type:application/sparql-update'"/>
 			<arg line="-u ${repository.user}:${repository.password}"/>
 			<arg line="'${repository.sparqlUpdate.url}'"/>
-		</exec>-->
+		</exec>
 		<delete dir="sparql/temp/"/>
 	</target>
 	
