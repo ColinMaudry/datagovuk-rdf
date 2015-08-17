@@ -1,4 +1,4 @@
-Semantic data.gov.uk (0.8.2)
+Semantic data.gov.uk (0.8.3)
 ==============
 
 This project is a fork of [datagouvfr-rdf](https://github.com/ColinMaudry/datagouvfr-rdf), adapted to the British Open Data portal metadata ([data.gov.uk](http://data.gov.uk)).
@@ -54,6 +54,11 @@ Otherwise, you can reach me:
 - on Twitter: [@CMaudry](https://twitter.com/CMaudry)
 
 ## Change log
+
+##### 0.8.3
+
+* Added backup-repository and load-backup targets to enable the management of the repository as a service
+* Added data integration from [beheader](https://github.com/ColinMaudry/beheader)
 
 ##### 0.8.2
 
