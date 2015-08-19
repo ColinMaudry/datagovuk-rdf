@@ -5,6 +5,8 @@ This project is a fork of [datagouvfr-rdf](https://github.com/ColinMaudry/datago
 
 You can fire [SPARQL](http://www.w3.org/TR/sparql11-query/#introduction) queries on the endpoint [here](http://www.data.maudry.com/sparql/data.gov.uk/).
 
+This script is fully functional (not beta or alpha or what not).
+
 ## Update script
 
 [build.xml](build.xml) is an Apache Ant script that runs the following tasks:
