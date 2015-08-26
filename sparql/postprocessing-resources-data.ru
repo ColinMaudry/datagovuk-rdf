@@ -70,6 +70,46 @@ where {
 	}
 };
 
+#Declare a list of content types as "machine readable"
+with <urn:graph:postprocessing>
+insert {
+	?resource dgfr:machineReadable ?machineReadable .
+}
+where {
+  values (?mediaType ?machineReadable) {
+    ("application/xml" true)
+    ("text/xml" true)
+		("application/json" true)
+    ("text/csv" true)
+    ("application/csv" true)
+    ("text/tsv" true)
+    ("text/plain" true)
+		("application/rdf+xml" true)
+    ("text/turtle" true)
+    ("text/trig" true)
+    ("text/n3" true)
+		("application/ld+json" true)
+		("application/shp+zip" true)
+		("application/vnd.google-earth.kml+xml" true)
+		("application/vnd.google-earth.kmz" true)
+		("application/kmz" true)
+    }
+    ?resource a dcat:Distribution ;
+      dcat:mediaType ?mediaType .
+};
+
+#The resources that didn't get the dgfr:machineReadable property are declared as not-machine readable
+with <urn:graph:postprocessing>
+insert {?resource dgfr:machineReadable false .}
+
+where {
+    ?resource a dcat:Distribution ;
+    dcat:mediaType ?mediaType .
+  filter not exists {?resource dgfr:machineReadable ?machineReadable}
+}
+
+
+
 
 
 
