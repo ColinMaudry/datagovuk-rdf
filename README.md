@@ -57,6 +57,10 @@ Otherwise, you can reach me:
 
 ## Change log
 
+##### 0.8.4
+
+* Detection of machine-readable resources (`dgfr:machineReadable`)
+
 ##### 0.8.3
 
 * Added backup-repository and load-backup targets to enable the management of the repository as a service
