@@ -30,7 +30,7 @@ from <file:../csv/resources.csv#delimiter=%2C;encoding=utf-8>
   bind(uri(concat("https://www.data.maudry.com/uk/resources/",?Resource_ID)) as ?resource)
   bind(uri(concat("https://www.data.maudry.com/uk/datasets/",?Dataset_Name)) as ?dataset)
   #If the URL contains space(s) 1) We remove the trailing space(s) (if any) 2) We replace the remaining spaces with %20 (the encoded equivalent of space)
-  bind(if(contains(?url," "), uri(replace(replace(?url,"[ ]+$","")," ","%20")),uri(?url)) as ?urlAsUri)
+  bind(if(contains(?URL," "), uri(replace(replace(?URL,"[ ]+$","")," ","%20")),uri(?URL)) as ?urlAsUri)
  # bind(xs:dateTime(?Date) as ?createdAsDateTime)
   bind(lcase(?Format) as ?lcFormat)
   }
