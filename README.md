@@ -32,7 +32,7 @@ The data model can be seen [here](https://www.lucidchart.com/documents/view/c695
 
 ### Configuration
 
-- Copy `upload_template.properties` and rename it `upload.properties`
+- Copy `config_template.properties` and rename it `config.properties`
 - Open it and fill it. As-is, your repository requires a user:password combination
 
 ### Run it

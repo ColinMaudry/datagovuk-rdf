@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." name="download-convert-upload" default="build">
-	<property file="upload.properties"/>
-	<property name="baseurl" value="http://www.data.gouv.fr/fr/"/>
+	<property file="config.properties"/>
+	<property name="baseurl" value="http://data.gov.uk/en/"/>
 		
 	<!-- Necessary to set full path in Linux as PATH in not available in cron job -->
-	<condition property="curl" value="curl.exe" else="/usr/bin/curl">
+	<condition property="curl" value="curl.exe" else="${fullCurlPath}">
 		<os family="windows"/>
 	</condition>
-	<condition property="tarql" value="tarql.bat" else="/home/admin/tarql/bin/tarql">
-		<os family="windows"/>
-	</condition>
-	<condition property="fuseki" value="fuseki-server.bat" else="/home/admin/fuseki/fuseki-server">
+	<condition property="tarql" value="tarql.bat" else="${fullTarqlPath}">
 		<os family="windows"/>
 	</condition>
 	<condition property="livedataDownloaded" value="true" else="false">
-		<available file="rdf/livedata.trig"></available>
+		<available file="${dataDirectory}/livedata.trig"></available>
 	</condition>
 	<tstamp>
 		<!-- With - to be filename-compatible -->
@@ -27,24 +24,22 @@
 			pattern="yyyy-MM-dd'T'HH:mm:ss"/>
 	</tstamp>
 	
-	
 	<extension-point name="quick" depends="publish, backup-repository"/>
-	<extension-point name="build" depends="convert, publish, backup-repository"/>
-	<extension-point name="test" depends="convert"/>
+	<extension-point name="build" depends="download,convert, publish, backup-repository"/>
 	
 	<target name="download">
-  	<echo>[DOWNLOAD AND EXTRACT]</echo>
-		<mkdir dir="csv"/>
-		<echo>Downloading ZIP...</echo>
+  	<echo>[DOWNLOAD]</echo>
+  	<mkdir dir="csv/history"/>
+		<echo>Downloading datasets.csv...</echo>
   	<get
   		verbose="false"
   		src="http://www.data.gov.uk/data/dumps/data.gov.uk-ckan-meta-data-latest.csv.zip"
   		dest="csv/dump.zip"/>
 		<echo>Extracting CSV dumps...</echo>
 		<unzip src="csv/dump.zip" dest="csv/"/>
-  </target>
+	</target>
 	
-	<target name="clean" depends="download">
+	<target name="clean">
 		<echo>[CLEAN]</echo>
 		<mkdir dir="csv/temp/"/>
 		<echo>Removing empty lines that mess with TARQL querying...</echo>
@@ -81,11 +76,10 @@
 		
 		<echo>Deleting temp directory...</echo>
 		<delete dir="csv/temp/"/>
-	</target>
-	
+	</target>	
 	<target name="convert" depends="clean">
 		<echo>[CONVERT]</echo>
-		<mkdir dir="rdf/"/>
+		<mkdir dir="rdf/history"/>
 		<echo>Querying datasets.csv with a SPARQL CONSTRUCT using TARQL (thanks @cygri)...</echo>
 		<exec executable="${tarql}" searchpath="true" output="rdf/datasets.ttl">
 			<arg line="sparql/construct-datasets.rq"/>
@@ -94,11 +88,18 @@
 		<exec executable="${tarql}" searchpath="true" output="rdf/resources.ttl">
 			<arg line="sparql/construct-resources.rq"/>
 		</exec>
-		<!--<antcall target="upload_temp"/>-->
+		<antcall target="upload_temp"/>
 	</target>
 	
 	<target name="upload_temp">
 		<echo>[TEMPORARY UPLOAD]</echo>
+		<echo>Creating prostprocessing graph...</echo>
+                <exec executable="${curl}" searchpath="true" failonerror="true">
+                        <arg line="-s -X PUT"/>
+                        <arg line="-H 'Content-type:text/turtle'"/>
+                        <arg line="-u ${repository.user}:${repository.password}"/>
+                        <arg line="'${repository.put.url}?graph=${postprocessingGraphUri}'"/>
+                </exec>
 		<echo>Uploading datasets.ttl to the postprocessing repository...</echo>
 		<exec executable="${curl}" searchpath="true" failonerror="true">
 			<arg line="-s -X PUT"/>
@@ -107,14 +108,6 @@
 			<arg line="-u ${repository.user}:${repository.password}"/>
 			<arg line="'${repository.put.url}?graph=${postprocessingGraphUri}'"/>
 		</exec>
-		<echo>Uploading resources.ttl to the postprocessing repository...</echo>
-		<exec executable="${curl}" searchpath="true" failonerror="true">
-			<arg line="-s -X POST"/>
-			<arg line="--data-binary @'rdf/resources.ttl'"/>
-			<arg line="-H 'Content-type:text/turtle'"/>
-			<arg line="-u ${repository.user}:${repository.password}"/>
-			<arg line="'${repository.put.url}?graph=${postprocessingGraphUri}'"/>
-		</exec>		
 	</target>
 	
 	<target name="postprocessing" depends="upload_temp">
@@ -207,7 +200,7 @@
 		<get 
 			verbose="false"
 			src="${repository.get.url}"
-			dest="rdf/latest.trig"/>
+			dest="${dataDirectory}/latest_${datasetId}.trig"/>
 	</target>
 	
 	<target name="load-backup">
@@ -215,7 +208,7 @@
 		<echo>Loading the backup dump file into the repository...</echo>
 		<exec executable="${curl}" searchpath="true" failonerror="true">
 			<arg line="-s -X PUT"/>
-			<arg line="--data-binary @'rdf/latest.trig'"/>
+			<arg line="--data-binary @'${dataDirectory}/latest_${datasetId}.trig'"/>
 			<arg line="-H 'Content-type:text/trig'"/>
 			<arg line="-u ${repository.user}:${repository.password}"/>
 			<arg line="'${repository.put.url}'"/>
@@ -224,11 +217,11 @@
 	
 	<target name="download-livedata" unless="${livedataDownloaded}">
 		<echo>[DOWNLOAD LIVE DATA]</echo>
-		<echo>Downloading live data as Trig (Turtle with graphs)...</echo>
+		<echo>Downloading live data as Trig (Turtle with named graphs)...</echo>
 		<get
 			verbose="false"
 			src="${live.repository.get.url}"
-			dest="rdf/livedata.trig"/>
+			dest="${dataDirectory}/livedata_${datasetId}.trig"/>
 	</target>
 	
 	<target name="livedata" depends="download-livedata">
@@ -236,7 +229,7 @@
 		<echo>Uploading live data into the local repository...</echo>
 		<exec executable="${curl}" searchpath="true">
 			<arg line="-s -X PUT"/>
-			<arg line="--data-binary @'rdf/livedata.trig'"/>
+			<arg line="--data-binary @'${dataDirectory}/livedata_${datasetId}.trig'"/>
 			<arg line="-H 'Content-type:text/trig'"/>
 			<arg line="-u ${repository.user}:${repository.password}"/>
 			<arg line="'${repository.put.url}'"/>
